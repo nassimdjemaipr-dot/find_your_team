@@ -15,32 +15,45 @@ class JeuxPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final repository = AnnonceRepository();
+    final isMobile = MediaQuery.of(context).size.width < 600;
 
-    // On ecoute Firestore en temps reel : des qu'une annonce est
-    // publiee, le compteur de la carte du jeu se met a jour tout seul.
     return StreamBuilder<List<Annonce>>(
       stream: repository.annoncesStream(),
       builder: (context, snapshot) {
         final annonces = snapshot.data ?? [];
 
-        return GridView.builder(
-          padding: const EdgeInsets.all(16),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 14,
-            mainAxisSpacing: 14,
-            childAspectRatio: 0.95,
-          ),
-          itemCount: jeux.length,
-          itemBuilder: (context, index) {
-            final jeu = jeux[index];
+        if (isMobile) {
+          return PageView.builder(
+            scrollDirection: Axis.vertical,
+            itemCount: jeux.length,
+            itemBuilder: (context, index) {
+              final jeu = jeux[index];
+              final nb = annonces.where((a) => a.jeu == jeu.nom).length;
 
-            // Nombre d'annonces publiees pour ce jeu.
-            final nb = annonces.where((a) => a.jeu == jeu.nom).length;
+              return Padding(
+                padding: const EdgeInsets.all(16),
+                child: _CarteJeu(jeu: jeu, nbAnnonces: nb),
+              );
+            },
+          );
+        } else {
+          return GridView.builder(
+            padding: const EdgeInsets.all(16),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 14,
+              mainAxisSpacing: 14,
+              childAspectRatio: 0.95,
+            ),
+            itemCount: jeux.length,
+            itemBuilder: (context, index) {
+              final jeu = jeux[index];
+              final nb = annonces.where((a) => a.jeu == jeu.nom).length;
 
-            return _CarteJeu(jeu: jeu, nbAnnonces: nb);
-          },
-        );
+              return _CarteJeu(jeu: jeu, nbAnnonces: nb);
+            },
+          );
+        }
       },
     );
   }

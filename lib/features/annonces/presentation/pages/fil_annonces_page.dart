@@ -19,15 +19,10 @@ class FilAnnoncesPage extends StatefulWidget {
 }
 
 class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
-  // Le texte tape dans la barre de recherche.
   String _recherche = '';
-
-  // Les filtres choisis (par defaut : tout sur "Tous").
   Filtres _filtres = Filtres();
-
   final _repository = AnnonceRepository();
 
-  // Transforme "18+" en 18, etc. (0 = pas de filtre d'age).
   int _ageMinimum(String choix) {
     switch (choix) {
       case '16+':
@@ -41,16 +36,13 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
     }
   }
 
-  // Applique la recherche + tous les filtres sur les annonces recues.
   List<Annonce> _appliquerFiltres(List<Annonce> annonces) {
     return annonces.where((a) {
-      // 1. Recherche (pseudo ou jeu), insensible a la casse.
       final texte = _recherche.toLowerCase();
       final okRecherche = texte.isEmpty ||
           a.pseudo.toLowerCase().contains(texte) ||
           a.jeu.toLowerCase().contains(texte);
 
-      // 2. Les filtres du panneau.
       final okJeu = _filtres.jeu == 'Tous' || a.jeu == _filtres.jeu;
       final okRole = _filtres.role == 'Tous' || a.roles.contains(_filtres.role);
       final okPlateforme =
@@ -63,7 +55,6 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
     }).toList();
   }
 
-  // Ouvre le panneau de filtres et recupere le choix de l'utilisateur.
   Future<void> _ouvrirFiltres() async {
     final resultat = await ouvrirFiltres(context, _filtres);
     if (resultat != null) {
@@ -74,12 +65,10 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
   @override
   Widget build(BuildContext context) {
     final nbFiltres = _filtres.nbActifs;
+    final isMobile = MediaQuery.of(context).size.width < 600;
 
-    // Pas de Scaffold ici : cette page est un onglet de la HomePage,
-    // c'est elle qui porte l'AppBar, la barre du bas et le bouton flottant.
     return Column(
       children: [
-        // --- Barre de recherche ---
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
           child: TextField(
@@ -91,7 +80,6 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
           ),
         ),
 
-        // --- Ligne : bouton Filtres + nombre de resultats ---
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
           child: Row(
@@ -101,7 +89,6 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
                 icon: const Icon(Icons.tune, size: 18),
                 label: Text(nbFiltres == 0 ? 'Filtres' : 'Filtres ($nbFiltres)'),
                 style: OutlinedButton.styleFrom(
-                  // Le bouton devient violet quand des filtres sont actifs.
                   foregroundColor: nbFiltres == 0
                       ? context.couleurs.onSurfaceVariant
                       : Colors.white,
@@ -121,7 +108,6 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
               ),
               const Spacer(),
 
-              // Le compteur suit le flux temps reel, filtres compris.
               StreamBuilder<List<Annonce>>(
                 stream: _repository.annoncesStream(),
                 builder: (context, snapshot) {
@@ -139,12 +125,10 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
           ),
         ),
 
-        // --- La liste des annonces, en temps reel ---
         Expanded(
           child: StreamBuilder<List<Annonce>>(
             stream: _repository.annoncesStream(),
             builder: (context, snapshot) {
-              // En attente de la premiere reponse de Firestore.
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
@@ -160,15 +144,35 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
 
               final annonces = _appliquerFiltres(snapshot.data ?? []);
 
-              return annonces.isEmpty
-                  ? _EtatVide()
-                  : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: annonces.length,
-                      itemBuilder: (context, index) {
-                        return AnnonceCard(annonce: annonces[index]);
-                      },
+              if (annonces.isEmpty) {
+                return _EtatVide();
+              }
+
+              if (isMobile) {
+                return PageView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: annonces.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: AnnonceCard(annonce: annonces[index]),
                     );
+                  },
+                );
+              } else {
+                return GridView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                  ),
+                  itemCount: annonces.length,
+                  itemBuilder: (context, index) {
+                    return AnnonceCard(annonce: annonces[index]);
+                  },
+                );
+              }
             },
           ),
         ),
