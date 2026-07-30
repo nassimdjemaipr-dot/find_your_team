@@ -1,0 +1,79 @@
+// ============================================================
+// DONNÉES FACTICES (temporaires)
+// De fausses annonces pour développer l'UI SANS attendre Firebase.
+//
+// ⚠️ À REMPLACER plus tard par le vrai flux temps réel du repository
+// de Melvyn : AnnonceRepository.annoncesStream()
+// ============================================================
+import '../models/annonce.dart';
+
+final List<Annonce> annoncesFactices = [
+  Annonce(
+    id: '1',
+    pseudo: 'NoScopeKing',
+    age: 19,
+    jeu: 'Valorant',
+    rangMin: 'Or',
+    rangMax: 'Platine',
+    plateforme: 'PC',
+    roles: ['Duelliste', 'Initiateur'],
+    micro: true,
+    pseudoJeu: 'NoScope#EUW',
+    discord: 'noscopeking',
+    nombreJoueurs: 2,
+    dureeMinutes: 120,
+    description: 'On cherche 2 joueurs chill pour ranked ce soir. Micro obligatoire !',
+    dateCreation: DateTime(2026, 7, 30, 18, 30),
+  ),
+  Annonce(
+    id: '2',
+    pseudo: 'MidOrFeed',
+    age: 24,
+    jeu: 'League of Legends',
+    rangMin: 'Argent',
+    rangMax: 'Or',
+    plateforme: 'PC',
+    roles: ['Support'],
+    micro: false,
+    pseudoJeu: 'MidOrFeed',
+    discord: 'midorfeed#0001',
+    nombreJoueurs: 1,
+    dureeMinutes: 60,
+    description: 'Cherche un support pour duoQ, ambiance détente pas de rage.',
+    dateCreation: DateTime(2026, 7, 30, 17, 15),
+  ),
+  Annonce(
+    id: '3',
+    pseudo: 'ClutchMaster',
+    age: 17,
+    jeu: 'Counter-Strike 2',
+    rangMin: 'Argent',
+    rangMax: 'Or Nova',
+    plateforme: 'PC',
+    roles: ['Entry', 'AWP'],
+    micro: true,
+    pseudoJeu: 'clutch_master',
+    discord: 'clutchmaster',
+    nombreJoueurs: 3,
+    dureeMinutes: 180,
+    description: 'Team sérieuse pour scrims, on veut monter cette saison.',
+    dateCreation: DateTime(2026, 7, 30, 16, 0),
+  ),
+  Annonce(
+    id: '4',
+    pseudo: 'DriftBoi',
+    age: 22,
+    jeu: 'Rocket League',
+    rangMin: 'Diamant',
+    rangMax: 'Champion',
+    plateforme: 'PS5',
+    roles: ['2v2'],
+    micro: true,
+    pseudoJeu: 'DriftBoi_77',
+    discord: 'driftboi',
+    nombreJoueurs: 1,
+    dureeMinutes: 90,
+    description: 'Cherche un coéquipier régulier pour du 2v2 compétitif.',
+    dateCreation: DateTime(2026, 7, 30, 14, 45),
+  ),
+];
