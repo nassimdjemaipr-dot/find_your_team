@@ -17,7 +17,6 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
   final _repository = AnnonceRepository();
   bool _isLoading = false;
 
-  final _pseudoController = TextEditingController();
   final _ageController = TextEditingController();
   final _rangMinController = TextEditingController();
   final _rangMaxController = TextEditingController();
@@ -40,7 +39,6 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
 
   @override
   void dispose() {
-    _pseudoController.dispose();
     _ageController.dispose();
     _rangMinController.dispose();
     _rangMaxController.dispose();
@@ -91,7 +89,7 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
       final annonce = Annonce(
         id: '',
         userId: userId,
-        pseudo: _pseudoController.text,
+        pseudo: _pseudoJeuController.text,
         age: int.parse(_ageController.text),
         jeu: _jeuSelectionne!,
         rangMin: _rangMinController.text,
@@ -143,12 +141,6 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(
-                controller: _pseudoController,
-                decoration: const InputDecoration(hintText: 'Pseudo'),
-                validator: (v) => v?.isEmpty ?? true ? 'Requis' : null,
-              ),
-              const SizedBox(height: 16),
               TextFormField(
                 controller: _ageController,
                 decoration: const InputDecoration(hintText: 'Âge'),
