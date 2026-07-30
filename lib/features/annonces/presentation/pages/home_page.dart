@@ -15,6 +15,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../profil/presentation/pages/profil_page.dart';
 import 'fil_annonces_page.dart';
 import 'jeux_page.dart';
+import 'creer_annonce_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -53,7 +54,9 @@ class _HomePageState extends State<HomePage> {
           ? null
           : FloatingActionButton.extended(
               onPressed: () {
-                // TODO : ouvrir l'ecran Creer une annonce (tache #9).
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (_) => const CreerAnnoncePage(),
+                ));
               },
               backgroundColor: context.couleurs.primary,
               foregroundColor: Colors.white,

@@ -73,6 +73,16 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
       return;
     }
 
+    // On relie l'annonce a son auteur : indispensable pour "mes annonces"
+    // et pour les regles de securite Firestore.
+    final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+    if (userId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vous devez être connecté')),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
 
     try {
@@ -80,9 +90,7 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
 
       final annonce = Annonce(
         id: '',
-        // On relie l'annonce a son auteur : indispensable pour
-        // "mes annonces" et pour les regles de securite Firestore.
-        userId: FirebaseAuth.instance.currentUser?.uid ?? '',
+        userId: userId,
         pseudo: _pseudoController.text,
         age: int.parse(_ageController.text),
         jeu: _jeuSelectionne!,
