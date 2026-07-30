@@ -8,6 +8,7 @@
 // ============================================================
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../auth/data/auth_repository.dart';
 import '../../data/annonces_factices.dart';
 import '../../models/annonce.dart';
 import '../widgets/annonce_card.dart';
@@ -82,11 +83,12 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
+          // En attendant l'ecran Profil (tache #10), ce bouton permet
+          // au moins de se deconnecter pour tester l'authentification.
           IconButton(
-            icon: const Icon(Icons.person_outline),
-            onPressed: () {
-              // TODO : aller vers l'écran Profil (tâche #10).
-            },
+            icon: const Icon(Icons.logout),
+            tooltip: 'Se deconnecter',
+            onPressed: () => AuthRepository().deconnexion(),
           ),
         ],
       ),

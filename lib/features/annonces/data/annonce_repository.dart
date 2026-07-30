@@ -31,7 +31,7 @@ class AnnonceRepository {
   Stream<List<Annonce>> mesAnnonces(String userId) {
     return _firestore
         .collection(_collection)
-        .where('pseudo', isEqualTo: userId)
+        .where('userId', isEqualTo: userId)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => Annonce.fromMap(doc.id, doc.data()))
