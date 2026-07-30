@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'firebase_options.dart';
 import 'core/stockage/preferences_service.dart';
+import 'core/stockage/favoris_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/pages/auth_gate.dart';
 
@@ -15,8 +16,9 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Stockage local : Hive (retient le theme choisi).
+  // Stockage local : Hive (retient le theme choisi + favoris).
   await PreferencesService.initialiser();
+  await FavorisService.initialiser();
 
   runApp(const MyApp());
 }
