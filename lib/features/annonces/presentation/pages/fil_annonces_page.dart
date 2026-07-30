@@ -8,10 +8,11 @@
 // ============================================================
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../data/annonces_factices.dart';
+import '../../data/annonce_repository.dart';
 import '../../models/annonce.dart';
 import '../widgets/annonce_card.dart';
 import '../widgets/filtres_sheet.dart';
+import 'creer_annonce_page.dart';
 
 class FilAnnoncesPage extends StatefulWidget {
   const FilAnnoncesPage({super.key});
@@ -21,13 +22,10 @@ class FilAnnoncesPage extends StatefulWidget {
 }
 
 class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
-  // Le texte tapé dans la barre de recherche.
   String _recherche = '';
-
-  // Les filtres choisis (par défaut : tout sur "Tous").
   Filtres _filtres = Filtres();
+  final _repository = AnnonceRepository();
 
-  // Transforme "18+" en 18, etc. (0 = pas de filtre d'âge).
   int _ageMinimum(String choix) {
     switch (choix) {
       case '16+':
@@ -41,16 +39,13 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
     }
   }
 
-  // Applique la recherche + tous les filtres sur la liste des annonces.
-  List<Annonce> get _annoncesFiltrees {
-    return annoncesFactices.where((a) {
-      // 1. Recherche (pseudo ou jeu), insensible à la casse.
+  List<Annonce> _appliquerFiltres(List<Annonce> annonces) {
+    return annonces.where((a) {
       final texte = _recherche.toLowerCase();
       final okRecherche = texte.isEmpty ||
           a.pseudo.toLowerCase().contains(texte) ||
           a.jeu.toLowerCase().contains(texte);
 
-      // 2. Les filtres du panneau.
       final okJeu = _filtres.jeu == 'Tous' || a.jeu == _filtres.jeu;
       final okRole = _filtres.role == 'Tous' || a.roles.contains(_filtres.role);
       final okPlateforme = _filtres.plateforme == 'Tous' || a.plateforme == _filtres.plateforme;
@@ -72,7 +67,6 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final annonces = _annoncesFiltrees;
     final nbFiltres = _filtres.nbActifs;
 
     // Pas de Scaffold ici : cette page est un onglet de la HomePage,
@@ -91,7 +85,6 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
             ),
           ),
 
-          // --- Ligne : bouton Filtres + nombre de résultats ---
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
             child: Row(
@@ -101,7 +94,6 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
                   icon: const Icon(Icons.tune, size: 18),
                   label: Text(nbFiltres == 0 ? 'Filtres' : 'Filtres ($nbFiltres)'),
                   style: OutlinedButton.styleFrom(
-                    // Le bouton devient violet quand des filtres sont actifs.
                     foregroundColor: nbFiltres == 0 ? AppTheme.texteDoux : Colors.white,
                     backgroundColor: nbFiltres == 0 ? AppTheme.surface : AppTheme.violet,
                     side: BorderSide(
@@ -112,28 +104,48 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
                   ),
                 ),
                 const Spacer(),
-                Text(
-                  '${annonces.length} résultat${annonces.length > 1 ? 's' : ''}',
-                  style: const TextStyle(color: AppTheme.texteDoux, fontSize: 13),
+                StreamBuilder<List<Annonce>>(
+                  stream: _repository.annoncesStream(),
+                  builder: (context, snapshot) {
+                    final count = snapshot.data?.length ?? 0;
+                    final filtrees = _appliquerFiltres(snapshot.data ?? []);
+                    return Text(
+                      '${filtrees.length} résultat${filtrees.length > 1 ? 's' : ''}',
+                      style: const TextStyle(color: AppTheme.texteDoux, fontSize: 13),
+                    );
+                  },
                 ),
               ],
             ),
           ),
 
-          // --- La liste des annonces (ou un message si vide) ---
           Expanded(
-            child: annonces.isEmpty
-                ? _EtatVide()
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: annonces.length,
-                    itemBuilder: (context, index) {
-                      return AnnonceCard(annonce: annonces[index]);
-                    },
-                  ),
+            child: StreamBuilder<List<Annonce>>(
+              stream: _repository.annoncesStream(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return Center(child: Text('Erreur : ${snapshot.error}'));
+                }
+
+                final annonces = _appliquerFiltres(snapshot.data ?? []);
+
+                return annonces.isEmpty
+                    ? _EtatVide()
+                    : ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: annonces.length,
+                        itemBuilder: (context, index) {
+                          return AnnonceCard(annonce: annonces[index]);
+                        },
+                      );
+              },
+            ),
           ),
         ],
-      );
   }
 }
 
