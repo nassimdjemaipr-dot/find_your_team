@@ -5,7 +5,8 @@
 // ============================================================
 import 'package:flutter/material.dart';
 import '../../../../core/jeux.dart';
-import '../../data/annonces_factices.dart';
+import '../../data/annonce_repository.dart';
+import '../../models/annonce.dart';
 import 'annonces_jeu_page.dart';
 
 class JeuxPage extends StatelessWidget {
@@ -13,22 +14,33 @@ class JeuxPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 14,
-        mainAxisSpacing: 14,
-        childAspectRatio: 0.95,
-      ),
-      itemCount: jeux.length,
-      itemBuilder: (context, index) {
-        final jeu = jeux[index];
+    final repository = AnnonceRepository();
 
-        // Nombre d'annonces pour ce jeu.
-        final nb = annoncesFactices.where((a) => a.jeu == jeu.nom).length;
+    // On ecoute Firestore en temps reel : des qu'une annonce est
+    // publiee, le compteur de la carte du jeu se met a jour tout seul.
+    return StreamBuilder<List<Annonce>>(
+      stream: repository.annoncesStream(),
+      builder: (context, snapshot) {
+        final annonces = snapshot.data ?? [];
 
-        return _CarteJeu(jeu: jeu, nbAnnonces: nb);
+        return GridView.builder(
+          padding: const EdgeInsets.all(16),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 14,
+            mainAxisSpacing: 14,
+            childAspectRatio: 0.95,
+          ),
+          itemCount: jeux.length,
+          itemBuilder: (context, index) {
+            final jeu = jeux[index];
+
+            // Nombre d'annonces publiees pour ce jeu.
+            final nb = annonces.where((a) => a.jeu == jeu.nom).length;
+
+            return _CarteJeu(jeu: jeu, nbAnnonces: nb);
+          },
+        );
       },
     );
   }
