@@ -72,24 +72,24 @@ class AnnoncesJeuPage extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
               child: Text(
                 '${annonces.length} annonce${annonces.length > 1 ? 's' : ''} en cours',
-                style: const TextStyle(color: AppTheme.texteDoux, fontSize: 14),
+                style: TextStyle(color: context.couleurs.onSurfaceVariant, fontSize: 14),
               ),
             ),
           ),
 
           // La liste, ou un message si aucune annonce.
           if (annonces.isEmpty)
-            const SliverFillRemaining(
+            SliverFillRemaining(
               hasScrollBody: false,
               child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.inbox, size: 56, color: AppTheme.texteDoux),
+                    Icon(Icons.inbox, size: 56, color: context.couleurs.onSurfaceVariant),
                     SizedBox(height: 12),
                     Text(
                       'Aucune annonce pour ce jeu',
-                      style: TextStyle(color: AppTheme.texteDoux, fontSize: 16),
+                      style: TextStyle(color: context.couleurs.onSurfaceVariant, fontSize: 16),
                     ),
                   ],
                 ),

@@ -155,7 +155,28 @@ match /annonces/{id} {
 | Filtre | Valeurs |
 |--------|---------|
 | **Jeu** | Tous · Valorant · League of Legends · CS:GO · Rocket League |
-| **Rôle** | Tous · Duelliste · Initiateur · Support · Entry · AWP · 2v2 |
+| **Rôle** | ⚠️ Dépend du jeu choisi (voir ci-dessous) |
 | **Plateforme** | Tous · PC · PS5 · Xbox · Switch |
 | **Micro** | Peu importe · Avec micro · Sans micro |
 | **Âge** | Tous · 16+ · 18+ · 21+ |
+
+### 🎭 Les rôles dépendent du jeu
+
+Un « duelliste » n'existe qu'à Valorant, un « jungler » qu'à League of Legends.
+Les rôles sont donc **rattachés à chaque jeu** dans [`lib/core/jeux.dart`](lib/core/jeux.dart),
+et pas dans une seule grande liste mélangée.
+
+| Jeu | Rôles |
+|-----|-------|
+| **Valorant** | Duelliste · Initiateur · Controleur · Sentinelle |
+| **League of Legends** | Top · Jungle · Mid · ADC · Support |
+| **CS:GO** | Entry Fragger · AWPer · Support · IGL · Lurker |
+| **Rocket League** | Attaquant · Milieu · Defenseur |
+
+**Conséquence pour le formulaire de création :** il faut d'abord choisir le jeu,
+puis proposer uniquement les rôles de ce jeu.
+
+```dart
+// Recuperer les roles du jeu selectionne
+final roles = jeuParNom(jeuChoisi)?.roles ?? [];
+```

@@ -18,9 +18,9 @@ class AnnonceCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: context.couleurs.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppTheme.bordure),
+        border: Border.all(color: context.couleurs.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,11 +31,11 @@ class AnnonceCard extends StatelessWidget {
               // Petite pastille avec la 1re lettre du pseudo.
               CircleAvatar(
                 radius: 20,
-                backgroundColor: AppTheme.violet.withValues(alpha: 0.2),
+                backgroundColor: context.couleurs.primary.withValues(alpha: 0.2),
                 child: Text(
                   annonce.pseudo.isNotEmpty ? annonce.pseudo[0].toUpperCase() : '?',
-                  style: const TextStyle(
-                    color: AppTheme.violet,
+                  style: TextStyle(
+                    color: context.couleurs.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -47,15 +47,15 @@ class AnnonceCard extends StatelessWidget {
                   children: [
                     Text(
                       annonce.pseudo,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: context.couleurs.onSurface,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
                     Text(
                       annonce.jeu,
-                      style: const TextStyle(color: AppTheme.texteDoux, fontSize: 13),
+                      style: TextStyle(color: context.couleurs.onSurfaceVariant, fontSize: 13),
                     ),
                   ],
                 ),
@@ -95,12 +95,12 @@ class AnnonceCard extends StatelessWidget {
               return Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: AppTheme.violet.withValues(alpha: 0.15),
+                  color: context.couleurs.primary.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   role,
-                  style: const TextStyle(color: AppTheme.violet, fontSize: 12),
+                  style: TextStyle(color: context.couleurs.primary, fontSize: 12),
                 ),
               );
             }).toList(),
@@ -110,7 +110,7 @@ class AnnonceCard extends StatelessWidget {
 
           Text(
             annonce.description,
-            style: const TextStyle(color: AppTheme.texteDoux, fontSize: 13, height: 1.4),
+            style: TextStyle(color: context.couleurs.onSurfaceVariant, fontSize: 13, height: 1.4),
           ),
 
           const SizedBox(height: 14),
@@ -126,7 +126,7 @@ class AnnonceCard extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.violet,
+                backgroundColor: context.couleurs.primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
@@ -154,15 +154,15 @@ class _Badge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: AppTheme.fond,
+        color: context.couleurs.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.bordure),
+        border: Border.all(color: context.couleurs.outlineVariant),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 15, color: AppTheme.texteDoux),
+          Icon(icon, size: 15, color: context.couleurs.onSurfaceVariant),
           const SizedBox(width: 4),
-          Text(texte, style: const TextStyle(color: Colors.white, fontSize: 13)),
+          Text(texte, style: TextStyle(color: context.couleurs.onSurface, fontSize: 13)),
         ],
       ),
     );
@@ -180,9 +180,9 @@ class _Info extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 16, color: AppTheme.texteDoux),
+        Icon(icon, size: 16, color: context.couleurs.onSurfaceVariant),
         const SizedBox(width: 5),
-        Text(texte, style: const TextStyle(color: Colors.white, fontSize: 13)),
+        Text(texte, style: TextStyle(color: context.couleurs.onSurface, fontSize: 13)),
       ],
     );
   }

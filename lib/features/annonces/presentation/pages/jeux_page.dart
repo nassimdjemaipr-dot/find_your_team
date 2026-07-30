@@ -5,7 +5,6 @@
 // ============================================================
 import 'package:flutter/material.dart';
 import '../../../../core/jeux.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../data/annonces_factices.dart';
 import 'annonces_jeu_page.dart';
 
@@ -146,5 +145,3 @@ class _CarteJeu extends StatelessWidget {
   }
 }
 
-// Petite aide pour reutiliser la couleur de fond ailleurs si besoin.
-const Color fondJeux = AppTheme.fond;

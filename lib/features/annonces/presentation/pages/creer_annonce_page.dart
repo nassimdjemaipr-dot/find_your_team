@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import '../../models/annonce.dart';
 import '../../data/annonce_repository.dart';
+import 'package:find_your_team/core/jeux.dart';
 import 'package:find_your_team/core/theme/app_theme.dart';
 
 class CreerAnnoncePage extends StatefulWidget {
@@ -31,19 +32,11 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
   DateTime? _dateFinAnnonce;
   bool _microDisponible = true;
 
-  final List<String> _jeux = [
-    'Valorant',
-    'League of Legends',
-    'Counter-Strike 2',
-    'Rocket League'
-  ];
-
-  final Map<String, List<String>> _rolesParJeu = {
-    'Valorant': ['Duelliste', 'Initiateur', 'Contrôleur', 'Sentinelle'],
-    'League of Legends': ['Top', 'Jungle', 'Mid', 'ADC', 'Support'],
-    'Counter-Strike 2': ['Entry', 'AWP', 'Support', 'IGL', 'Rifler'],
-    'Rocket League': ['2v2', '3v3'],
-  };
+  // La liste des jeux et leurs roles viennent de core/jeux.dart :
+  // une seule source pour le formulaire, les filtres et la vue par jeu.
+  // Sans ca, une annonce creee ici pourrait ne jamais apparaitre
+  // dans les filtres (nom de jeu ou de role different).
+  final List<String> _jeux = nomsJeux;
 
   @override
   void dispose() {
@@ -80,18 +73,19 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
       return;
     }
 
+    // On relie l'annonce a son auteur : indispensable pour "mes annonces"
+    // et pour les regles de securite Firestore.
+    final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+    if (userId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vous devez être connecté')),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
 
     try {
-      final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
-      if (userId.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Vous devez être connecté')),
-        );
-        setState(() => _isLoading = false);
-        return;
-      }
-
       final dureeMinutes = _dateFinAnnonce!.difference(DateTime.now()).inMinutes;
 
       final annonce = Annonce(
@@ -135,8 +129,8 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
   @override
   Widget build(BuildContext context) {
     final rolesDisponibles = _jeuSelectionne != null
-        ? _rolesParJeu[_jeuSelectionne] ?? []
-        : [];
+        ? jeuParNom(_jeuSelectionne!)?.roles ?? <String>[]
+        : <String>[];
 
     return Scaffold(
       appBar: AppBar(
@@ -163,7 +157,7 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _jeuSelectionne,
+                initialValue: _jeuSelectionne,
                 decoration: const InputDecoration(
                   hintText: 'Choisir un jeu',
                   labelText: 'Jeu',
@@ -233,10 +227,10 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
                 ),
                 const SizedBox(height: 16),
               ] else
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text('Sélectionnez un jeu pour voir les rôles',
-                      style: TextStyle(color: AppTheme.texteDoux, fontSize: 12)),
+                      style: TextStyle(color: context.couleurs.onSurfaceVariant, fontSize: 12)),
                 ),
               Row(
                 children: [
@@ -249,7 +243,7 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
-                        color: _microDisponible ? AppTheme.violet : AppTheme.bordure,
+                        color: _microDisponible ? context.couleurs.primary : context.couleurs.outlineVariant,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -307,7 +301,7 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
                     style: TextStyle(
                       color: _dateFinAnnonce != null
                           ? Colors.white
-                          : AppTheme.texteDoux,
+                          : context.couleurs.onSurfaceVariant,
                     ),
                   ),
                 ),
@@ -326,8 +320,8 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
                   onPressed: _isLoading ? null : _soumettre,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: AppTheme.violet,
-                    disabledBackgroundColor: AppTheme.bordure,
+                    backgroundColor: context.couleurs.primary,
+                    disabledBackgroundColor: context.couleurs.outlineVariant,
                   ),
                   child: _isLoading
                       ? const SizedBox(

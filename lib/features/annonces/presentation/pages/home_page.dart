@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
                   builder: (_) => const CreerAnnoncePage(),
                 ));
               },
-              backgroundColor: AppTheme.violet,
+              backgroundColor: context.couleurs.primary,
               foregroundColor: Colors.white,
               icon: const Icon(Icons.add),
               label: const Text('Annonce'),
@@ -66,26 +66,26 @@ class _HomePageState extends State<HomePage> {
 
       // --- La barre de navigation du bas ---
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: AppTheme.surface,
-          border: Border(top: BorderSide(color: AppTheme.bordure)),
+        decoration: BoxDecoration(
+          color: context.couleurs.surfaceContainerHighest,
+          border: Border(top: BorderSide(color: context.couleurs.outlineVariant)),
         ),
         child: NavigationBarTheme(
           data: NavigationBarThemeData(
             backgroundColor: Colors.transparent,
-            indicatorColor: AppTheme.violet.withValues(alpha: 0.2),
+            indicatorColor: context.couleurs.primary.withValues(alpha: 0.2),
             labelTextStyle: WidgetStateProperty.resolveWith((etats) {
               final actif = etats.contains(WidgetState.selected);
               return TextStyle(
                 fontSize: 12,
-                color: actif ? AppTheme.violet : AppTheme.texteDoux,
+                color: actif ? context.couleurs.primary : context.couleurs.onSurfaceVariant,
                 fontWeight: actif ? FontWeight.bold : FontWeight.normal,
               );
             }),
             iconTheme: WidgetStateProperty.resolveWith((etats) {
               final actif = etats.contains(WidgetState.selected);
               return IconThemeData(
-                color: actif ? AppTheme.violet : AppTheme.texteDoux,
+                color: actif ? context.couleurs.primary : context.couleurs.onSurfaceVariant,
               );
             }),
           ),
