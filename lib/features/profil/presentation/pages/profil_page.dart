@@ -4,6 +4,7 @@
 // La gestion de "mes annonces" viendra avec la tache #10.
 // ============================================================
 import 'package:flutter/material.dart';
+import '../../../../core/stockage/preferences_service.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../auth/data/auth_repository.dart';
 
@@ -32,9 +33,9 @@ class ProfilPage extends StatelessWidget {
                 height: 88,
                 width: 88,
                 alignment: Alignment.center,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [AppTheme.violet, Color(0xFF5F4FF5)],
+                    colors: [context.couleurs.primary, const Color(0xFF5F4FF5)],
                   ),
                   shape: BoxShape.circle,
                 ),
@@ -50,8 +51,8 @@ class ProfilPage extends StatelessWidget {
               const SizedBox(height: 14),
               Text(
                 pseudo,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: context.couleurs.onSurface,
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
@@ -59,7 +60,7 @@ class ProfilPage extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 email,
-                style: const TextStyle(color: AppTheme.texteDoux, fontSize: 14),
+                style: TextStyle(color: context.couleurs.onSurfaceVariant, fontSize: 14),
               ),
             ],
           ),
@@ -67,22 +68,66 @@ class ProfilPage extends StatelessWidget {
 
         const SizedBox(height: 30),
 
+        // --- Choix du theme (enregistre en local avec Hive) ---
+        // Material (et pas Container) : le SwitchListTile a besoin d'un
+        // Material parent pour dessiner son fond et son effet de clic.
+        Material(
+          color: context.couleurs.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(18),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: context.couleurs.outlineVariant),
+            ),
+            child: SwitchListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+            value: PreferencesService.themeSombre,
+            // Un seul appel : Hive enregistre le choix, et l'application
+            // se repeint toute seule (elle ecoute la box dans main.dart).
+            onChanged: (valeur) => PreferencesService.setThemeSombre(valeur),
+            activeThumbColor: context.couleurs.primary,
+            secondary: Icon(
+              PreferencesService.themeSombre
+                  ? Icons.dark_mode
+                  : Icons.light_mode,
+              color: context.couleurs.primary,
+            ),
+            title: Text(
+              'Theme sombre',
+              style: TextStyle(
+                color: context.couleurs.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            subtitle: Text(
+              PreferencesService.themeSombre ? 'Active' : 'Desactive',
+              style: TextStyle(
+                color: context.couleurs.onSurfaceVariant,
+                fontSize: 13,
+              ),
+            ),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
         // --- Emplacement pour "mes annonces" (tache #10) ---
         Container(
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: AppTheme.surface,
+            color: context.couleurs.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: AppTheme.bordure),
+            border: Border.all(color: context.couleurs.outlineVariant),
           ),
-          child: const Row(
+          child: Row(
             children: [
-              Icon(Icons.article_outlined, color: AppTheme.texteDoux),
-              SizedBox(width: 12),
+              Icon(Icons.article_outlined, color: context.couleurs.onSurfaceVariant),
+              const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   'Mes annonces arrivent bientot',
-                  style: TextStyle(color: AppTheme.texteDoux),
+                  style: TextStyle(color: context.couleurs.onSurfaceVariant),
                 ),
               ),
             ],

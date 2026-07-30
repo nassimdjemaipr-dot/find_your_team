@@ -103,8 +103,8 @@ class _AuthPageState extends State<AuthPage> {
                     width: 72,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [AppTheme.violet, Color(0xFF5F4FF5)],
+                      gradient: LinearGradient(
+                        colors: [context.couleurs.primary, const Color(0xFF5F4FF5)],
                       ),
                       borderRadius: BorderRadius.circular(20),
                     ),
@@ -112,11 +112,11 @@ class _AuthPageState extends State<AuthPage> {
                         color: Colors.white, size: 38),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
+                  Text(
                     'Find Your Team',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: context.couleurs.onSurface,
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
                     ),
@@ -127,7 +127,7 @@ class _AuthPageState extends State<AuthPage> {
                         ? 'Cree ton compte et trouve ton equipe'
                         : 'Content de te revoir !',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppTheme.texteDoux),
+                    style: TextStyle(color: context.couleurs.onSurfaceVariant),
                   ),
                   const SizedBox(height: 32),
 
@@ -135,7 +135,7 @@ class _AuthPageState extends State<AuthPage> {
                   if (_inscription) ...[
                     TextFormField(
                       controller: _pseudoCtrl,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: context.couleurs.onSurface),
                       decoration: const InputDecoration(
                         hintText: 'Ton pseudo',
                         prefixIcon: Icon(Icons.person_outline),
@@ -157,7 +157,7 @@ class _AuthPageState extends State<AuthPage> {
                   TextFormField(
                     controller: _emailCtrl,
                     keyboardType: TextInputType.emailAddress,
-                    style: const TextStyle(color: Colors.white),
+                    style: TextStyle(color: context.couleurs.onSurface),
                     decoration: const InputDecoration(
                       hintText: 'Adresse email',
                       prefixIcon: Icon(Icons.mail_outline),
@@ -178,14 +178,14 @@ class _AuthPageState extends State<AuthPage> {
                   TextFormField(
                     controller: _mdpCtrl,
                     obscureText: _mdpCache,
-                    style: const TextStyle(color: Colors.white),
+                    style: TextStyle(color: context.couleurs.onSurface),
                     decoration: InputDecoration(
                       hintText: 'Mot de passe',
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _mdpCache ? Icons.visibility_off : Icons.visibility,
-                          color: AppTheme.texteDoux,
+                          color: context.couleurs.onSurfaceVariant,
                         ),
                         onPressed: () => setState(() => _mdpCache = !_mdpCache),
                       ),
@@ -210,9 +210,9 @@ class _AuthPageState extends State<AuthPage> {
                       // les doubles envois.
                       onPressed: _chargement ? null : _valider,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.violet,
+                        backgroundColor: context.couleurs.primary,
                         foregroundColor: Colors.white,
-                        disabledBackgroundColor: AppTheme.violet.withValues(alpha: 0.5),
+                        disabledBackgroundColor: context.couleurs.primary.withValues(alpha: 0.5),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
@@ -242,7 +242,7 @@ class _AuthPageState extends State<AuthPage> {
                     onPressed: _chargement ? null : _changerMode,
                     child: RichText(
                       text: TextSpan(
-                        style: const TextStyle(color: AppTheme.texteDoux, fontSize: 14),
+                        style: TextStyle(color: context.couleurs.onSurfaceVariant, fontSize: 14),
                         children: [
                           TextSpan(
                             text: _inscription
@@ -251,8 +251,8 @@ class _AuthPageState extends State<AuthPage> {
                           ),
                           TextSpan(
                             text: _inscription ? 'Se connecter' : "S'inscrire",
-                            style: const TextStyle(
-                              color: AppTheme.violet,
+                            style: TextStyle(
+                              color: context.couleurs.primary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

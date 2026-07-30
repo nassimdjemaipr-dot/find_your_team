@@ -46,7 +46,7 @@ class Filtres {
 Future<Filtres?> ouvrirFiltres(BuildContext context, Filtres actuels) {
   return showModalBottomSheet<Filtres>(
     context: context,
-    backgroundColor: AppTheme.fond,
+    backgroundColor: context.couleurs.surface,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -69,10 +69,46 @@ class _FiltresSheetState extends State<_FiltresSheet> {
   // Les choix possibles pour chaque filtre.
   // On repart de la liste partagee des jeux, en ajoutant "Tous" devant.
   final _jeux = ['Tous', ...nomsJeux];
-  final _roles = ['Tous', 'Duelliste', 'Initiateur', 'Support', 'Entry', 'AWP', '2v2'];
   final _plateformes = ['Tous', 'PC', 'PS5', 'Xbox', 'Switch'];
   final _micros = ['Peu importe', 'Avec micro', 'Sans micro'];
   final _ages = ['Tous', '16+', '18+', '21+'];
+
+  // Les roles du jeu selectionne, ou null si aucun jeu n'est choisi.
+  List<String>? get _rolesDuJeu =>
+      f.jeu == 'Tous' ? null : jeuParNom(f.jeu)?.roles;
+
+  // Affiche a la place des roles quand aucun jeu n'est selectionne.
+  Widget _messageChoisirJeu(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Rôle',
+          style: TextStyle(
+            color: context.couleurs.onSurface,
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Icon(Icons.info_outline,
+                size: 16, color: context.couleurs.onSurfaceVariant),
+            const SizedBox(width: 6),
+            Text(
+              'Choisis un jeu pour voir ses rôles',
+              style: TextStyle(
+                color: context.couleurs.onSurfaceVariant,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 18),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,20 +124,35 @@ class _FiltresSheetState extends State<_FiltresSheet> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppTheme.bordure,
+                  color: context.couleurs.outlineVariant,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
             const SizedBox(height: 18),
-            const Text(
+            Text(
               'Filtres',
-              style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+              style: TextStyle(color: context.couleurs.onSurface, fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
 
-            _section('Jeu', _jeux, f.jeu, (v) => setState(() => f.jeu = v)),
-            _section('Rôle', _roles, f.role, (v) => setState(() => f.role = v)),
+            _section('Jeu', _jeux, f.jeu, (v) {
+              setState(() {
+                f.jeu = v;
+                // Les roles dependent du jeu : si on change de jeu,
+                // l'ancien role choisi n'a plus de sens.
+                f.role = 'Tous';
+              });
+            }),
+
+            // Les roles ne s'affichent qu'une fois un jeu choisi,
+            // car chaque jeu a ses propres roles.
+            if (_rolesDuJeu != null)
+              _section('Rôle', ['Tous', ..._rolesDuJeu!], f.role,
+                  (v) => setState(() => f.role = v))
+            else
+              _messageChoisirJeu(context),
+
             _section('Plateforme', _plateformes, f.plateforme, (v) => setState(() => f.plateforme = v)),
             _section('Micro', _micros, f.micro, (v) => setState(() => f.micro = v)),
             _section('Âge', _ages, f.age, (v) => setState(() => f.age = v)),
@@ -116,8 +167,8 @@ class _FiltresSheetState extends State<_FiltresSheet> {
                     // Réinitialiser = renvoyer des filtres vides (tout sur "Tous").
                     onPressed: () => Navigator.pop(context, Filtres()),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppTheme.texteDoux,
-                      side: const BorderSide(color: AppTheme.bordure),
+                      foregroundColor: context.couleurs.onSurfaceVariant,
+                      side: BorderSide(color: context.couleurs.outlineVariant),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
@@ -129,7 +180,7 @@ class _FiltresSheetState extends State<_FiltresSheet> {
                   child: ElevatedButton(
                     onPressed: () => Navigator.pop(context, f),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.violet,
+                      backgroundColor: context.couleurs.primary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -153,7 +204,7 @@ class _FiltresSheetState extends State<_FiltresSheet> {
       children: [
         Text(
           titre,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+          style: TextStyle(color: context.couleurs.onSurface, fontWeight: FontWeight.bold, fontSize: 15),
         ),
         const SizedBox(height: 8),
         Wrap(
@@ -167,12 +218,12 @@ class _FiltresSheetState extends State<_FiltresSheet> {
               onSelected: (_) => onPick(option),
               showCheckmark: false,
               labelStyle: TextStyle(
-                color: actif ? Colors.white : AppTheme.texteDoux,
+                color: actif ? Colors.white : context.couleurs.onSurfaceVariant,
                 fontSize: 13,
               ),
-              backgroundColor: AppTheme.surface,
-              selectedColor: AppTheme.violet,
-              side: const BorderSide(color: AppTheme.bordure),
+              backgroundColor: context.couleurs.surfaceContainerHighest,
+              selectedColor: context.couleurs.primary,
+              side: BorderSide(color: context.couleurs.outlineVariant),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             );
           }).toList(),

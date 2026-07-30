@@ -102,10 +102,10 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
                   label: Text(nbFiltres == 0 ? 'Filtres' : 'Filtres ($nbFiltres)'),
                   style: OutlinedButton.styleFrom(
                     // Le bouton devient violet quand des filtres sont actifs.
-                    foregroundColor: nbFiltres == 0 ? AppTheme.texteDoux : Colors.white,
-                    backgroundColor: nbFiltres == 0 ? AppTheme.surface : AppTheme.violet,
+                    foregroundColor: nbFiltres == 0 ? context.couleurs.onSurfaceVariant : Colors.white,
+                    backgroundColor: nbFiltres == 0 ? context.couleurs.surfaceContainerHighest : context.couleurs.primary,
                     side: BorderSide(
-                      color: nbFiltres == 0 ? AppTheme.bordure : AppTheme.violet,
+                      color: nbFiltres == 0 ? context.couleurs.outlineVariant : context.couleurs.primary,
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -114,7 +114,7 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
                 const Spacer(),
                 Text(
                   '${annonces.length} résultat${annonces.length > 1 ? 's' : ''}',
-                  style: const TextStyle(color: AppTheme.texteDoux, fontSize: 13),
+                  style: TextStyle(color: context.couleurs.onSurfaceVariant, fontSize: 13),
                 ),
               ],
             ),
@@ -144,12 +144,12 @@ class _EtatVide extends StatelessWidget {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: const [
-          Icon(Icons.search_off, size: 60, color: AppTheme.texteDoux),
-          SizedBox(height: 12),
+        children: [
+          Icon(Icons.search_off, size: 60, color: context.couleurs.onSurfaceVariant),
+          const SizedBox(height: 12),
           Text(
             'Aucune annonce trouvée',
-            style: TextStyle(color: AppTheme.texteDoux, fontSize: 16),
+            style: TextStyle(color: context.couleurs.onSurfaceVariant, fontSize: 16),
           ),
         ],
       ),
