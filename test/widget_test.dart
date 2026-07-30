@@ -1,30 +1,21 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+// Test de base de l'ecran Fil d'annonces.
+// On teste la page directement (pas MyApp) car MyApp a besoin
+// que Firebase soit initialise, ce qui n'est pas le cas en test.
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:find_your_team/main.dart';
+import 'package:find_your_team/features/annonces/presentation/pages/fil_annonces_page.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Le fil affiche la recherche et le bouton Filtres',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(const MaterialApp(home: FilAnnoncesPage()));
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // La barre de recherche et le bouton de filtres sont bien la.
+    expect(find.text('Rechercher un joueur, un jeu...'), findsOneWidget);
+    expect(find.text('Filtres'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Les annonces factices sont affichees.
+    expect(find.text('NoScopeKing'), findsOneWidget);
   });
 }
