@@ -5,7 +5,8 @@
 import 'package:flutter/material.dart';
 import '../../../../core/jeux.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../data/annonces_factices.dart';
+import '../../data/annonce_repository.dart';
+import '../../models/annonce.dart';
 import '../widgets/annonce_card.dart';
 
 class AnnoncesJeuPage extends StatelessWidget {
@@ -15,12 +16,22 @@ class AnnoncesJeuPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // On garde uniquement les annonces de ce jeu.
-    final annonces = annoncesFactices.where((a) => a.jeu == jeu.nom).toList();
+    final repository = AnnonceRepository();
 
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: [
+    // Temps reel : on ecoute Firestore et on ne garde que les
+    // annonces de ce jeu.
+    return StreamBuilder<List<Annonce>>(
+      stream: repository.annoncesStream(),
+      builder: (context, snapshot) {
+        final annonces =
+            (snapshot.data ?? []).where((a) => a.jeu == jeu.nom).toList();
+
+        // Vrai tant que Firestore n'a pas encore repondu.
+        final chargement = snapshot.connectionState == ConnectionState.waiting;
+
+        return Scaffold(
+          body: CustomScrollView(
+            slivers: [
           // En-tete colore aux couleurs du jeu, qui se replie au scroll.
           SliverAppBar(
             expandedHeight: 160,
@@ -66,46 +77,57 @@ class AnnoncesJeuPage extends StatelessWidget {
             ),
           ),
 
-          // Le nombre d'annonces trouvees.
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
-              child: Text(
-                '${annonces.length} annonce${annonces.length > 1 ? 's' : ''} en cours',
-                style: TextStyle(color: context.couleurs.onSurfaceVariant, fontSize: 14),
-              ),
-            ),
-          ),
-
-          // La liste, ou un message si aucune annonce.
-          if (annonces.isEmpty)
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.inbox, size: 56, color: context.couleurs.onSurfaceVariant),
-                    SizedBox(height: 12),
-                    Text(
-                      'Aucune annonce pour ce jeu',
-                      style: TextStyle(color: context.couleurs.onSurfaceVariant, fontSize: 16),
-                    ),
-                  ],
+              // Le nombre d'annonces trouvees.
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+                  child: Text(
+                    '${annonces.length} annonce${annonces.length > 1 ? 's' : ''} en cours',
+                    style: TextStyle(
+                        color: context.couleurs.onSurfaceVariant, fontSize: 14),
+                  ),
                 ),
               ),
-            )
-          else
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              sliver: SliverList.builder(
-                itemCount: annonces.length,
-                itemBuilder: (context, index) =>
-                    AnnonceCard(annonce: annonces[index]),
-              ),
-            ),
-        ],
-      ),
+
+              // Chargement, puis la liste ou un message si c'est vide.
+              if (chargement)
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (annonces.isEmpty)
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.inbox,
+                            size: 56, color: context.couleurs.onSurfaceVariant),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Aucune annonce pour ce jeu',
+                          style: TextStyle(
+                              color: context.couleurs.onSurfaceVariant,
+                              fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  sliver: SliverList.builder(
+                    itemCount: annonces.length,
+                    itemBuilder: (context, index) =>
+                        AnnonceCard(annonce: annonces[index]),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
