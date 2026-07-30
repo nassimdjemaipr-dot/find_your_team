@@ -1,11 +1,7 @@
-// ============================================================
-// WIDGET carte d'annonce.
-// Affiche une annonce dans le fil (jeu, rangs, plateforme, rôles...).
-// C'est un composant réutilisable -> on le peaufinera en tâche #8.
-// ============================================================
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/annonce.dart';
+import '../pages/detail_annonce_page.dart';
 
 class AnnonceCard extends StatelessWidget {
   final Annonce annonce;
@@ -14,17 +10,23 @@ class AnnonceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.couleurs.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: context.couleurs.outlineVariant),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(
+          builder: (_) => DetailAnnoncePage(annonce: annonce),
+        ));
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 14),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.couleurs.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: context.couleurs.outlineVariant),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
           // --- Ligne du haut : pseudo + jeu ---
           Row(
             children: [
@@ -137,7 +139,8 @@ class AnnonceCard extends StatelessWidget {
               label: const Text('Contacter sur Discord'),
             ),
           ),
-        ],
+          ],
+        ),
       ),
     );
   }
