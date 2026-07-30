@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/annonce.dart';
 import '../../data/annonce_repository.dart';
 import 'package:find_your_team/core/theme/app_theme.dart';
@@ -82,10 +83,20 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
     setState(() => _isLoading = true);
 
     try {
+      final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+      if (userId.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Vous devez être connecté')),
+        );
+        setState(() => _isLoading = false);
+        return;
+      }
+
       final dureeMinutes = _dateFinAnnonce!.difference(DateTime.now()).inMinutes;
 
       final annonce = Annonce(
         id: '',
+        userId: userId,
         pseudo: _pseudoController.text,
         age: int.parse(_ageController.text),
         jeu: _jeuSelectionne!,

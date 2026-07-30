@@ -146,6 +146,7 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
             ),
           ),
         ],
+      );
   }
 }
 
