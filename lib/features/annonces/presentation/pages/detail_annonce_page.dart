@@ -2,21 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/stockage/favoris_service.dart';
 import '../../models/annonce.dart';
 import '../../data/annonce_repository.dart';
 
-class DetailAnnoncePage extends StatelessWidget {
+class DetailAnnoncePage extends StatefulWidget {
   final Annonce annonce;
 
   const DetailAnnoncePage({super.key, required this.annonce});
 
+  @override
+  State<DetailAnnoncePage> createState() => _DetailAnnoncePageState();
+}
+
+class _DetailAnnoncePageState extends State<DetailAnnoncePage> {
+  late bool _estFavori;
+
+  @override
+  void initState() {
+    super.initState();
+    _estFavori = FavorisService.isFavori(widget.annonce.id);
+  }
+
+  void _toggleFavori() async {
+    await FavorisService.toggle(widget.annonce.id);
+    setState(() {
+      _estFavori = FavorisService.isFavori(widget.annonce.id);
+    });
+  }
+
   bool get _estMonAnnonce {
     final userId = FirebaseAuth.instance.currentUser?.uid;
-    return userId == annonce.userId;
+    return userId == widget.annonce.userId;
   }
 
   String _getImagePath() {
-    final jeu = annonce.jeu.toLowerCase().trim();
+    final jeu = widget.annonce.jeu.toLowerCase().trim();
 
     if (jeu.contains('valorant')) {
       return 'assets/images/jeux/valorant.webp';
@@ -35,21 +56,21 @@ class DetailAnnoncePage extends StatelessWidget {
   }
 
   Future<void> _contacterDiscord(BuildContext context) async {
-    final discordUrl = 'discord://${annonce.discord}';
+    final discordUrl = 'discord://${widget.annonce.discord}';
     try {
       if (await canLaunchUrl(Uri.parse(discordUrl))) {
         await launchUrl(Uri.parse(discordUrl));
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Discord : ${annonce.discord}')),
+            SnackBar(content: Text('Discord : ${widget.annonce.discord}')),
           );
         }
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Discord : ${annonce.discord}')),
+          SnackBar(content: Text('Discord : ${widget.annonce.discord}')),
         );
       }
     }
@@ -76,7 +97,7 @@ class DetailAnnoncePage extends StatelessWidget {
 
     if (confirm == true && context.mounted) {
       try {
-        await AnnonceRepository().supprimerAnnonce(annonce.id);
+        await AnnonceRepository().supprimerAnnonce(widget.annonce.id);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Annonce supprimée')),
@@ -99,8 +120,15 @@ class DetailAnnoncePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(annonce.jeu),
+        title: Text(widget.annonce.jeu),
         actions: [
+          IconButton(
+            icon: Icon(
+              _estFavori ? Icons.star : Icons.star_border,
+              color: _estFavori ? context.couleurs.primary : null,
+            ),
+            onPressed: _toggleFavori,
+          ),
           if (_estMonAnnonce)
             IconButton(
               icon: const Icon(Icons.delete),
@@ -134,7 +162,7 @@ class DetailAnnoncePage extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    annonce.jeu,
+                    widget.annonce.jeu,
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -155,8 +183,8 @@ class DetailAnnoncePage extends StatelessWidget {
                         radius: 32,
                         backgroundColor: couleurs.primary.withValues(alpha: 0.2),
                         child: Text(
-                          annonce.pseudo.isNotEmpty
-                              ? annonce.pseudo[0].toUpperCase()
+                          widget.annonce.pseudo.isNotEmpty
+                              ? widget.annonce.pseudo[0].toUpperCase()
                               : '?',
                           style: TextStyle(
                             color: couleurs.primary,
@@ -171,7 +199,7 @@ class DetailAnnoncePage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              annonce.pseudo,
+                              widget.annonce.pseudo,
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -179,7 +207,7 @@ class DetailAnnoncePage extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              '${annonce.age} ans',
+                              '${widget.annonce.age} ans',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: couleurs.onSurfaceVariant,
@@ -197,17 +225,17 @@ class DetailAnnoncePage extends StatelessWidget {
                       _InfoRow(
                         icon: Icons.leaderboard,
                         label: 'Rang',
-                        value: '${annonce.rangMin} → ${annonce.rangMax}',
+                        value: '${widget.annonce.rangMin} → ${widget.annonce.rangMax}',
                       ),
                       _InfoRow(
                         icon: Icons.videogame_asset,
                         label: 'Plateforme',
-                        value: annonce.plateforme,
+                        value: widget.annonce.plateforme,
                       ),
                       _InfoRow(
                         icon: Icons.person,
                         label: 'Pseudo jeu',
-                        value: annonce.pseudoJeu,
+                        value: widget.annonce.pseudoJeu,
                       ),
                     ],
                   ),
@@ -218,12 +246,12 @@ class DetailAnnoncePage extends StatelessWidget {
                       _InfoRow(
                         icon: Icons.mic,
                         label: 'Micro',
-                        value: annonce.micro ? 'Obligatoire' : 'Non obligatoire',
+                        value: widget.annonce.micro ? 'Obligatoire' : 'Non obligatoire',
                       ),
                       _InfoRow(
                         icon: Icons.group,
                         label: 'Joueurs recherchés',
-                        value: '${annonce.nombreJoueurs}',
+                        value: '${widget.annonce.nombreJoueurs}',
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -234,7 +262,7 @@ class DetailAnnoncePage extends StatelessWidget {
                             const SizedBox(height: 8),
                             Wrap(
                               spacing: 8,
-                              children: annonce.roles.map((role) {
+                              children: widget.annonce.roles.map((role) {
                                 return Container(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 12, vertical: 6),
@@ -259,7 +287,7 @@ class DetailAnnoncePage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  if (annonce.description.isNotEmpty)
+                  if (widget.annonce.description.isNotEmpty)
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -270,7 +298,7 @@ class DetailAnnoncePage extends StatelessWidget {
                             )),
                         const SizedBox(height: 8),
                         Text(
-                          annonce.description,
+                          widget.annonce.description,
                           style: TextStyle(
                             fontSize: 14,
                             height: 1.6,

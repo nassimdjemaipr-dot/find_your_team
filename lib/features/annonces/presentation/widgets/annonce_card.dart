@@ -1,19 +1,40 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/stockage/favoris_service.dart';
 import '../../models/annonce.dart';
 import '../pages/detail_annonce_page.dart';
 
-class AnnonceCard extends StatelessWidget {
+class AnnonceCard extends StatefulWidget {
   final Annonce annonce;
 
   const AnnonceCard({super.key, required this.annonce});
+
+  @override
+  State<AnnonceCard> createState() => _AnnonceCardState();
+}
+
+class _AnnonceCardState extends State<AnnonceCard> {
+  late bool _estFavori;
+
+  @override
+  void initState() {
+    super.initState();
+    _estFavori = FavorisService.isFavori(widget.annonce.id);
+  }
+
+  void _toggleFavori() async {
+    await FavorisService.toggle(widget.annonce.id);
+    setState(() {
+      _estFavori = FavorisService.isFavori(widget.annonce.id);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(
-          builder: (_) => DetailAnnoncePage(annonce: annonce),
+          builder: (_) => DetailAnnoncePage(annonce: widget.annonce),
         ));
       },
       child: Container(
@@ -35,7 +56,7 @@ class AnnonceCard extends StatelessWidget {
                 radius: 20,
                 backgroundColor: context.couleurs.primary.withValues(alpha: 0.2),
                 child: Text(
-                  annonce.pseudo.isNotEmpty ? annonce.pseudo[0].toUpperCase() : '?',
+                  widget.annonce.pseudo.isNotEmpty ? widget.annonce.pseudo[0].toUpperCase() : '?',
                   style: TextStyle(
                     color: context.couleurs.primary,
                     fontWeight: FontWeight.bold,
@@ -48,7 +69,7 @@ class AnnonceCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      annonce.pseudo,
+                      widget.annonce.pseudo,
                       style: TextStyle(
                         color: context.couleurs.onSurface,
                         fontWeight: FontWeight.bold,
@@ -56,7 +77,7 @@ class AnnonceCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      annonce.jeu,
+                      widget.annonce.jeu,
                       style: TextStyle(color: context.couleurs.onSurfaceVariant, fontSize: 13),
                     ),
                   ],
@@ -65,7 +86,17 @@ class AnnonceCard extends StatelessWidget {
               // Badge du nombre de joueurs recherchés.
               _Badge(
                 icon: Icons.group,
-                texte: '${annonce.nombreJoueurs}',
+                texte: '${widget.annonce.nombreJoueurs}',
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: Icon(
+                  _estFavori ? Icons.star : Icons.star_border,
+                  color: _estFavori ? context.couleurs.primary : context.couleurs.onSurfaceVariant,
+                ),
+                onPressed: _toggleFavori,
+                constraints: const BoxConstraints(),
+                padding: EdgeInsets.zero,
               ),
             ],
           ),
@@ -77,12 +108,12 @@ class AnnonceCard extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
-              _Info(icon: Icons.leaderboard, texte: '${annonce.rangMin} → ${annonce.rangMax}'),
-              _Info(icon: Icons.videogame_asset, texte: annonce.plateforme),
-              _Info(icon: Icons.cake_outlined, texte: '${annonce.age} ans'),
+              _Info(icon: Icons.leaderboard, texte: '${widget.annonce.rangMin} → ${widget.annonce.rangMax}'),
+              _Info(icon: Icons.videogame_asset, texte: widget.annonce.plateforme),
+              _Info(icon: Icons.cake_outlined, texte: '${widget.annonce.age} ans'),
               _Info(
-                icon: annonce.micro ? Icons.mic : Icons.mic_off,
-                texte: annonce.micro ? 'Micro' : 'Sans micro',
+                icon: widget.annonce.micro ? Icons.mic : Icons.mic_off,
+                texte: widget.annonce.micro ? 'Micro' : 'Sans micro',
               ),
             ],
           ),
@@ -93,7 +124,7 @@ class AnnonceCard extends StatelessWidget {
           Wrap(
             spacing: 6,
             runSpacing: 6,
-            children: annonce.roles.map((role) {
+            children: widget.annonce.roles.map((role) {
               return Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
@@ -111,7 +142,7 @@ class AnnonceCard extends StatelessWidget {
           const SizedBox(height: 12),
 
           Text(
-            annonce.description,
+            widget.annonce.description,
             style: TextStyle(color: context.couleurs.onSurfaceVariant, fontSize: 13, height: 1.4),
           ),
 
@@ -124,7 +155,7 @@ class AnnonceCard extends StatelessWidget {
               onPressed: () {
                 // TODO (tâche #8) : ouvrir/copier le Discord de l'annonce.
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Discord : ${annonce.discord}')),
+                  SnackBar(content: Text('Discord : ${widget.annonce.discord}')),
                 );
               },
               style: ElevatedButton.styleFrom(
