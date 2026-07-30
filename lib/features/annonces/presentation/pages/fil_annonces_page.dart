@@ -8,7 +8,6 @@
 // ============================================================
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../auth/data/auth_repository.dart';
 import '../../data/annonces_factices.dart';
 import '../../models/annonce.dart';
 import '../widgets/annonce_card.dart';
@@ -76,24 +75,10 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
     final annonces = _annoncesFiltrees;
     final nbFiltres = _filtres.nbActifs;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Find Your Team',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          // En attendant l'ecran Profil (tache #10), ce bouton permet
-          // au moins de se deconnecter pour tester l'authentification.
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Se deconnecter',
-            onPressed: () => AuthRepository().deconnexion(),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
+    // Pas de Scaffold ici : cette page est un onglet de la HomePage,
+    // c'est elle qui porte l'AppBar, la TabBar et le bouton flottant.
+    return Column(
+      children: [
           // --- Barre de recherche ---
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
@@ -148,19 +133,7 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
                   ),
           ),
         ],
-      ),
-
-      // Bouton pour créer une annonce (écran de la tâche #9).
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // TODO : aller vers l'écran Créer une annonce (tâche #9).
-        },
-        backgroundColor: AppTheme.violet,
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.add),
-        label: const Text('Annonce'),
-      ),
-    );
+      );
   }
 }
 

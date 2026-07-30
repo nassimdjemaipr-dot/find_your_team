@@ -4,6 +4,7 @@
 // micro, âge. Par défaut tout est sur "Tous" (aucun filtre).
 // ============================================================
 import 'package:flutter/material.dart';
+import '../../../../core/jeux.dart';
 import '../../../../core/theme/app_theme.dart';
 
 // Contient les filtres choisis par l'utilisateur.
@@ -66,7 +67,8 @@ class _FiltresSheetState extends State<_FiltresSheet> {
   late Filtres f = widget.actuels;
 
   // Les choix possibles pour chaque filtre.
-  final _jeux = ['Tous', 'Valorant', 'League of Legends', 'Counter-Strike 2', 'Rocket League'];
+  // On repart de la liste partagee des jeux, en ajoutant "Tous" devant.
+  final _jeux = ['Tous', ...nomsJeux];
   final _roles = ['Tous', 'Duelliste', 'Initiateur', 'Support', 'Entry', 'AWP', '2v2'];
   final _plateformes = ['Tous', 'PC', 'PS5', 'Xbox', 'Switch'];
   final _micros = ['Peu importe', 'Avec micro', 'Sans micro'];

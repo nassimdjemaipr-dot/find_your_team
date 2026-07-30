@@ -49,7 +49,7 @@ final List<Annonce> annoncesFactices = [
     userId: 'demo-user-3',
     pseudo: 'ClutchMaster',
     age: 17,
-    jeu: 'Counter-Strike 2',
+    jeu: 'CS:GO',
     rangMin: 'Argent',
     rangMax: 'Or Nova',
     plateforme: 'PC',

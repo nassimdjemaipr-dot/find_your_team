@@ -23,7 +23,7 @@ Une seule collection : `annonces`. Le champ `userId` permet de retrouver les ann
 | `userId` | `String` | string | `''` | UID Firebase de l'auteur (⚠️ sert aux règles de sécurité et à "mes annonces") |
 | `pseudo` | `String` | string | `''` | Pseudo du compte |
 | `age` | `int` | number | `0` | Âge du joueur |
-| `jeu` | `String` | string | `''` | Valorant, League of Legends, Counter-Strike 2, Rocket League |
+| `jeu` | `String` | string | `''` | Valorant, League of Legends, CS:GO, Rocket League |
 | `rangMin` | `String` | string | `''` | Rang minimum recherché |
 | `rangMax` | `String` | string | `''` | Rang maximum recherché |
 | `plateforme` | `String` | string | `''` | PC, PS5, Xbox, Switch |
@@ -154,7 +154,7 @@ match /annonces/{id} {
 
 | Filtre | Valeurs |
 |--------|---------|
-| **Jeu** | Tous · Valorant · League of Legends · Counter-Strike 2 · Rocket League |
+| **Jeu** | Tous · Valorant · League of Legends · CS:GO · Rocket League |
 | **Rôle** | Tous · Duelliste · Initiateur · Support · Entry · AWP · 2v2 |
 | **Plateforme** | Tous · PC · PS5 · Xbox · Switch |
 | **Micro** | Peu importe · Avec micro · Sans micro |
