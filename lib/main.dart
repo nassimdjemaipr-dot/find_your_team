@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
-import 'features/annonces/presentation/pages/fil_annonces_page.dart';
+import 'features/auth/presentation/pages/auth_gate.dart';
 
 void main() async {
   // Obligatoire avant d'utiliser Firebase au demarrage.
@@ -24,9 +24,8 @@ class MyApp extends StatelessWidget {
       title: 'Find Your Team',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.sombre,
-      // Pour l'instant on démarre sur le fil d'annonces.
-      // Plus tard : AuthGate (tâche #5) décidera connexion / fil.
-      home: const FilAnnoncesPage(),
+      // L'AuthGate decide : connexion si personne, sinon le fil d'annonces.
+      home: const AuthGate(),
     );
   }
 }

@@ -69,23 +69,10 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
   Widget build(BuildContext context) {
     final nbFiltres = _filtres.nbActifs;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Find Your Team',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person_outline),
-            onPressed: () {
-              // TODO : aller vers l'écran Profil (tâche #10).
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
+    // Pas de Scaffold ici : cette page est un onglet de la HomePage,
+    // c'est elle qui porte l'AppBar, la TabBar et le bouton flottant.
+    return Column(
+      children: [
           // --- Barre de recherche ---
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
@@ -159,20 +146,6 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
             ),
           ),
         ],
-      ),
-
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(
-            builder: (_) => const CreerAnnoncePage(),
-          ));
-        },
-        backgroundColor: AppTheme.violet,
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.add),
-        label: const Text('Annonce'),
-      ),
-    );
   }
 }
 
