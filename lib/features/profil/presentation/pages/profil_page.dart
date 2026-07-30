@@ -8,6 +8,7 @@ import '../../../../core/stockage/preferences_service.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../auth/data/auth_repository.dart';
 import '../../../annonces/presentation/pages/mes_favoris_page.dart';
+import '../../../annonces/presentation/pages/mes_annonces_page.dart';
 
 class ProfilPage extends StatelessWidget {
   const ProfilPage({super.key});
@@ -113,25 +114,32 @@ class ProfilPage extends StatelessWidget {
 
         const SizedBox(height: 16),
 
-        // --- Emplacement pour "mes annonces" (tache #10) ---
-        Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: context.couleurs.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: context.couleurs.outlineVariant),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.article_outlined, color: context.couleurs.onSurfaceVariant),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'Mes annonces arrivent bientot',
-                  style: TextStyle(color: context.couleurs.onSurfaceVariant),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const MesAnnoncesPage()),
+            );
+          },
+          child: Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: context.couleurs.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: context.couleurs.outlineVariant),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.article_outlined, color: context.couleurs.onSurfaceVariant),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Mes annonces',
+                    style: TextStyle(color: context.couleurs.onSurfaceVariant),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
 
