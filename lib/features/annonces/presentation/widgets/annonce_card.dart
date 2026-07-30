@@ -6,6 +6,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../models/annonce.dart';
+import '../pages/detail_annonce_page.dart';
 
 class AnnonceCard extends StatelessWidget {
   final Annonce annonce;
@@ -14,7 +15,13 @@ class AnnonceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(
+          builder: (_) => DetailAnnoncePage(annonce: annonce),
+        ));
+      },
+      child: Container(
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -138,6 +145,7 @@ class AnnonceCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }
