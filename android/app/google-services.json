@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "777720306386",
+    "project_id": "findyourteam-4e66c",
+    "storage_bucket": "findyourteam-4e66c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:777720306386:android:b5154c75f87fdf9b272b0b",
+        "android_client_info": {
+          "package_name": "com.example.find_your_team"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiCtxG6Gzw6m78FWv1ZVOa5fF3TCtcsTQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
