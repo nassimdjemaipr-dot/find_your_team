@@ -10,6 +10,7 @@ import '../models/annonce.dart';
 final List<Annonce> annoncesFactices = [
   Annonce(
     id: '1',
+    userId: 'demo-user-1',
     pseudo: 'NoScopeKing',
     age: 19,
     jeu: 'Valorant',
@@ -27,6 +28,7 @@ final List<Annonce> annoncesFactices = [
   ),
   Annonce(
     id: '2',
+    userId: 'demo-user-2',
     pseudo: 'MidOrFeed',
     age: 24,
     jeu: 'League of Legends',
@@ -44,6 +46,7 @@ final List<Annonce> annoncesFactices = [
   ),
   Annonce(
     id: '3',
+    userId: 'demo-user-3',
     pseudo: 'ClutchMaster',
     age: 17,
     jeu: 'Counter-Strike 2',
@@ -61,6 +64,7 @@ final List<Annonce> annoncesFactices = [
   ),
   Annonce(
     id: '4',
+    userId: 'demo-user-4',
     pseudo: 'DriftBoi',
     age: 22,
     jeu: 'Rocket League',

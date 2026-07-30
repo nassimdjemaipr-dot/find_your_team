@@ -1,5 +1,8 @@
 class Annonce {
   final String id;
+  // UID Firebase de l'auteur : relie l'annonce a son createur.
+  // Sert pour "mes annonces" et pour les regles de securite Firestore.
+  final String userId;
   final String pseudo;
   final int age;
   final String jeu;
@@ -17,6 +20,7 @@ class Annonce {
 
   Annonce({
     required this.id,
+    required this.userId,
     required this.pseudo,
     required this.age,
     required this.jeu,
@@ -36,6 +40,7 @@ class Annonce {
   factory Annonce.fromMap(String id, Map<String, dynamic> data) {
     return Annonce(
       id: id,
+      userId: data['userId'] ?? '',
       pseudo: data['pseudo'] ?? '',
       age: data['age'] ?? 0,
       jeu: data['jeu'] ?? '',
@@ -55,6 +60,7 @@ class Annonce {
 
   Map<String, dynamic> toMap() {
     return {
+      'userId': userId,
       'pseudo': pseudo,
       'age': age,
       'jeu': jeu,
