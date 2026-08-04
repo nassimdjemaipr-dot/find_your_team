@@ -8,8 +8,10 @@ import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/pages/auth_gate.dart';
 
 void main() async {
-  // Obligatoire avant d'utiliser Firebase ou Hive au demarrage.
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialiser Hive AVANT tout (obligatoire pour la persistance).
+  await Hive.initFlutter();
 
   // Stockage distant : Firestore + authentification.
   await Firebase.initializeApp(
