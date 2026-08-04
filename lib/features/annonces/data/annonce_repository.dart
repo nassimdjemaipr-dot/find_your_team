@@ -24,6 +24,10 @@ class AnnonceRepository {
     return docRef.id;
   }
 
+  Future<void> modifierAnnonce(String id, Annonce annonce) async {
+    await _firestore.collection(_collection).doc(id).update(annonce.toMap());
+  }
+
   Future<void> supprimerAnnonce(String id) async {
     await _firestore.collection(_collection).doc(id).delete();
   }

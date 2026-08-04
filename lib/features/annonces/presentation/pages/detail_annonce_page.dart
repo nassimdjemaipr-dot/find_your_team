@@ -5,6 +5,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/stockage/favoris_service.dart';
 import '../../models/annonce.dart';
 import '../../data/annonce_repository.dart';
+import 'creer_annonce_page.dart';
 
 class DetailAnnoncePage extends StatefulWidget {
   final Annonce annonce;
@@ -129,6 +130,20 @@ class _DetailAnnoncePageState extends State<DetailAnnoncePage> {
             ),
             onPressed: _toggleFavori,
           ),
+          if (_estMonAnnonce)
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CreerAnnoncePage(annonceAModifier: widget.annonce),
+                  ),
+                ).then((_) {
+                  if (mounted) setState(() {});
+                });
+              },
+            ),
           if (_estMonAnnonce)
             IconButton(
               icon: const Icon(Icons.delete),

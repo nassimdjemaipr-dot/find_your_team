@@ -6,7 +6,9 @@ import 'package:find_your_team/core/jeux.dart';
 import 'package:find_your_team/core/theme/app_theme.dart';
 
 class CreerAnnoncePage extends StatefulWidget {
-  const CreerAnnoncePage({super.key});
+  final Annonce? annonceAModifier;
+
+  const CreerAnnoncePage({super.key, this.annonceAModifier});
 
   @override
   State<CreerAnnoncePage> createState() => _CreerAnnoncePageState();
@@ -31,11 +33,29 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
   DateTime? _dateFinAnnonce;
   bool _microDisponible = true;
 
-  // La liste des jeux et leurs roles viennent de core/jeux.dart :
-  // une seule source pour le formulaire, les filtres et la vue par jeu.
-  // Sans ca, une annonce creee ici pourrait ne jamais apparaitre
-  // dans les filtres (nom de jeu ou de role different).
   final List<String> _jeux = nomsJeux;
+
+  bool get _enModeEdition => widget.annonceAModifier != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_enModeEdition) {
+      final annonce = widget.annonceAModifier!;
+      _ageController.text = annonce.age.toString();
+      _jeuSelectionne = annonce.jeu;
+      _rangMinController.text = annonce.rangMin;
+      _rangMaxController.text = annonce.rangMax;
+      _plateformeController.text = annonce.plateforme;
+      _pseudoJeuController.text = annonce.pseudoJeu;
+      _discordController.text = annonce.discord;
+      _nombreJoueursController.text = annonce.nombreJoueurs.toString();
+      _descriptionController.text = annonce.description;
+      _rolesSelectionnees.addAll(annonce.roles);
+      _microDisponible = annonce.micro;
+      _dateFinAnnonce = DateTime.now().add(Duration(minutes: annonce.dureeMinutes));
+    }
+  }
 
   @override
   void dispose() {
@@ -105,11 +125,15 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
         dateCreation: DateTime.now(),
       );
 
-      await _repository.ajouterAnnonce(annonce);
+      if (_enModeEdition) {
+        await _repository.modifierAnnonce(widget.annonceAModifier!.id, annonce);
+      } else {
+        await _repository.ajouterAnnonce(annonce);
+      }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Annonce créée avec succès !')),
+          SnackBar(content: Text(_enModeEdition ? 'Annonce modifiée avec succès !' : 'Annonce créée avec succès !')),
         );
         Navigator.pop(context);
       }
@@ -132,7 +156,7 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nouvelle annonce'),
+        title: Text(_enModeEdition ? 'Modifier l\'annonce' : 'Nouvelle annonce'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
