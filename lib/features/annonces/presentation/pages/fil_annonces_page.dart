@@ -36,6 +36,21 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
     }
   }
 
+  // Le filtre d'etat. Par defaut on ne montre que les annonces
+  // ouvertes : inutile de proposer une equipe deja complete.
+  bool _correspondAuStatut(String statut) {
+    switch (_filtres.statut) {
+      case 'Tous':
+        return true;
+      case 'Complète':
+        return statut == StatutAnnonce.complete;
+      case 'Fermée':
+        return statut == StatutAnnonce.fermee;
+      default: // 'Ouvertes seulement'
+        return statut == StatutAnnonce.ouverte;
+    }
+  }
+
   List<Annonce> _appliquerFiltres(List<Annonce> annonces) {
     return annonces.where((a) {
       final texte = _recherche.toLowerCase();
@@ -50,8 +65,15 @@ class _FilAnnoncesPageState extends State<FilAnnoncesPage> {
       final okMicro = _filtres.micro == 'Peu importe' ||
           (_filtres.micro == 'Avec micro' ? a.micro : !a.micro);
       final okAge = a.age >= _ageMinimum(_filtres.age);
+      final okStatut = _correspondAuStatut(a.statut);
 
-      return okRecherche && okJeu && okRole && okPlateforme && okMicro && okAge;
+      return okRecherche &&
+          okJeu &&
+          okRole &&
+          okPlateforme &&
+          okMicro &&
+          okAge &&
+          okStatut;
     }).toList();
   }
 

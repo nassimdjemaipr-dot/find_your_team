@@ -14,6 +14,9 @@ class Filtres {
   String plateforme;
   String micro; // 'Peu importe' | 'Avec micro' | 'Sans micro'
   String age; // 'Tous' | '16+' | '18+' | '21+'
+  // 'Ouvertes seulement' par defaut : on ne veut pas rejoindre une
+  // equipe deja complete sans le savoir.
+  String statut; // 'Ouvertes seulement' | 'Tous' | Ouverte | Complete | Fermee
 
   Filtres({
     this.jeu = 'Tous',
@@ -21,6 +24,7 @@ class Filtres {
     this.plateforme = 'Tous',
     this.micro = 'Peu importe',
     this.age = 'Tous',
+    this.statut = 'Ouvertes seulement',
   });
 
   // Une copie (pour modifier sans toucher l'original tant qu'on n'a pas validé).
@@ -30,6 +34,7 @@ class Filtres {
         plateforme: plateforme,
         micro: micro,
         age: age,
+        statut: statut,
       );
 
   // Combien de filtres sont actifs (pour l'afficher sur le bouton).
@@ -39,6 +44,7 @@ class Filtres {
         plateforme != 'Tous',
         micro != 'Peu importe',
         age != 'Tous',
+        statut != 'Ouvertes seulement',
       ].where((actif) => actif).length;
 }
 
@@ -72,6 +78,7 @@ class _FiltresSheetState extends State<_FiltresSheet> {
   final _plateformes = ['Tous', 'PC', 'PS5', 'Xbox', 'Switch'];
   final _micros = ['Peu importe', 'Avec micro', 'Sans micro'];
   final _ages = ['Tous', '16+', '18+', '21+'];
+  final _statuts = ['Ouvertes seulement', 'Tous', 'Complète', 'Fermée'];
 
   // Les roles du jeu selectionne, ou null si aucun jeu n'est choisi.
   List<String>? get _rolesDuJeu =>
@@ -156,6 +163,7 @@ class _FiltresSheetState extends State<_FiltresSheet> {
             _section('Plateforme', _plateformes, f.plateforme, (v) => setState(() => f.plateforme = v)),
             _section('Micro', _micros, f.micro, (v) => setState(() => f.micro = v)),
             _section('Âge', _ages, f.age, (v) => setState(() => f.age = v)),
+            _section('État', _statuts, f.statut, (v) => setState(() => f.statut = v)),
 
             const SizedBox(height: 12),
 

@@ -5,6 +5,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/stockage/favoris_service.dart';
 import '../../models/annonce.dart';
 import '../../data/annonce_repository.dart';
+import '../widgets/statut_pastille.dart';
 import 'creer_annonce_page.dart';
 
 class DetailAnnoncePage extends StatefulWidget {
@@ -19,10 +20,50 @@ class DetailAnnoncePage extends StatefulWidget {
 class _DetailAnnoncePageState extends State<DetailAnnoncePage> {
   late bool _estFavori;
 
+  // Le statut affiche. On le garde dans l'etat de l'ecran pour que
+  // la pastille change tout de suite au clic, sans attendre Firestore.
+  late String _statut;
+  bool _statutEnCours = false;
+
   @override
   void initState() {
     super.initState();
     _estFavori = FavorisService.isFavori(widget.annonce.id);
+    _statut = widget.annonce.statut;
+  }
+
+  // Change l'etat de l'annonce (reserve a son auteur).
+  Future<void> _changerStatut(String nouveauStatut) async {
+    if (nouveauStatut == _statut) return;
+
+    final ancien = _statut;
+    setState(() {
+      _statut = nouveauStatut;
+      _statutEnCours = true;
+    });
+
+    try {
+      await AnnonceRepository()
+          .changerStatut(widget.annonce.id, nouveauStatut);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Annonce ${libelleStatut(nouveauStatut).toLowerCase()}'),
+          ),
+        );
+      }
+    } catch (e) {
+      // En cas d'echec on revient a l'ancien statut : l'affichage
+      // ne doit pas mentir sur ce qui est reellement enregistre.
+      if (mounted) {
+        setState(() => _statut = ancien);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erreur : $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _statutEnCours = false);
+    }
   }
 
   void _toggleFavori() async {
@@ -323,6 +364,55 @@ class _DetailAnnoncePageState extends State<DetailAnnoncePage> {
                       ],
                     ),
                   const SizedBox(height: 24),
+
+                  // Seul l'auteur peut changer l'etat de son annonce.
+                  if (_estMonAnnonce) ...[
+                    Text(
+                      'État de l\'annonce',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: couleurs.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Préviens les autres joueurs sans supprimer ton annonce.',
+                      style: TextStyle(
+                          fontSize: 13, color: couleurs.onSurfaceVariant),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: StatutAnnonce.tous.map((statut) {
+                        final actif = statut == _statut;
+                        final couleur = couleurStatut(statut);
+
+                        return ChoiceChip(
+                          label: Text(libelleStatut(statut)),
+                          selected: actif,
+                          showCheckmark: false,
+                          onSelected:
+                              _statutEnCours ? null : (_) => _changerStatut(statut),
+                          labelStyle: TextStyle(
+                            color: actif ? Colors.white : couleur,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          backgroundColor: couleur.withValues(alpha: 0.12),
+                          selectedColor: couleur,
+                          side: BorderSide(
+                              color: couleur.withValues(alpha: 0.5)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+
                   if (!_estMonAnnonce)
                     SizedBox(
                       width: double.infinity,

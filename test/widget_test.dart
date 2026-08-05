@@ -70,6 +70,42 @@ void main() {
     });
   });
 
+  group('Statut', () {
+    test('une annonce est ouverte par defaut', () {
+      final annonce = Annonce.fromMap('x', {'jeu': 'Valorant'});
+      expect(annonce.statut, StatutAnnonce.ouverte);
+    });
+
+    test('une annonce publiee avant le statut est consideree ouverte', () {
+      // Ancien document Firestore : le champ statut n'existe pas.
+      final annonce = Annonce.fromMap('ancien', {'pseudo': 'Vieux'});
+      expect(annonce.statut, StatutAnnonce.ouverte);
+    });
+
+    test('copierAvecStatut change le statut sans toucher au reste', () {
+      final depart = Annonce.fromMap('1', {
+        'pseudo': 'Test',
+        'jeu': 'CS:GO',
+        'roles': ['AWPer'],
+      });
+
+      final complete = depart.copierAvecStatut(StatutAnnonce.complete);
+
+      expect(complete.statut, StatutAnnonce.complete);
+      expect(complete.pseudo, depart.pseudo);
+      expect(complete.jeu, depart.jeu);
+      expect(complete.roles, depart.roles);
+      // L'original n'a pas bouge.
+      expect(depart.statut, StatutAnnonce.ouverte);
+    });
+
+    test('le statut est bien enregistre dans toMap', () {
+      final annonce = Annonce.fromMap('1', {'jeu': 'Valorant'})
+          .copierAvecStatut(StatutAnnonce.fermee);
+      expect(annonce.toMap()['statut'], StatutAnnonce.fermee);
+    });
+  });
+
   group('Filtres', () {
     test('aucun filtre actif par defaut', () {
       expect(Filtres().nbActifs, 0);

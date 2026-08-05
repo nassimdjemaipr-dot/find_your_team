@@ -1,3 +1,15 @@
+// Les etats possibles d'une annonce.
+// On garde la valeur enregistree dans Firestore en String (et pas
+// l'index) pour que la base reste lisible et qu'ajouter un statut
+// plus tard ne decale pas les anciennes annonces.
+class StatutAnnonce {
+  static const ouverte = 'Ouverte';
+  static const complete = 'Complete';
+  static const fermee = 'Fermee';
+
+  static const tous = [ouverte, complete, fermee];
+}
+
 class Annonce {
   final String id;
   // UID Firebase de l'auteur : relie l'annonce a son createur.
@@ -17,6 +29,8 @@ class Annonce {
   final int dureeMinutes;
   final String description;
   final DateTime dateCreation;
+  // Etat de l'annonce : voir StatutAnnonce.
+  final String statut;
 
   Annonce({
     required this.id,
@@ -35,6 +49,9 @@ class Annonce {
     required this.dureeMinutes,
     required this.description,
     required this.dateCreation,
+    // Une annonce est ouverte par defaut : on n'a pas a le preciser
+    // a la creation.
+    this.statut = StatutAnnonce.ouverte,
   });
 
   factory Annonce.fromMap(String id, Map<String, dynamic> data) {
@@ -55,6 +72,33 @@ class Annonce {
       dureeMinutes: data['dureeMinutes'] ?? 60,
       description: data['description'] ?? '',
       dateCreation: DateTime.tryParse(data['dateCreation'] ?? '') ?? DateTime.now(),
+      // Les annonces publiees avant l'ajout du statut n'ont pas ce
+      // champ : on les considere ouvertes.
+      statut: data['statut'] ?? StatutAnnonce.ouverte,
+    );
+  }
+
+  // Renvoie une copie de l'annonce avec un statut different.
+  // Pratique pour changer le statut sans reconstruire tout l'objet.
+  Annonce copierAvecStatut(String nouveauStatut) {
+    return Annonce(
+      id: id,
+      userId: userId,
+      pseudo: pseudo,
+      age: age,
+      jeu: jeu,
+      rangMin: rangMin,
+      rangMax: rangMax,
+      plateforme: plateforme,
+      roles: roles,
+      micro: micro,
+      pseudoJeu: pseudoJeu,
+      discord: discord,
+      nombreJoueurs: nombreJoueurs,
+      dureeMinutes: dureeMinutes,
+      description: description,
+      dateCreation: dateCreation,
+      statut: nouveauStatut,
     );
   }
 
@@ -75,6 +119,7 @@ class Annonce {
       'dureeMinutes': dureeMinutes,
       'description': description,
       'dateCreation': dateCreation.toIso8601String(),
+      'statut': statut,
     };
   }
 }
