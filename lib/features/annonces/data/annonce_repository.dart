@@ -32,6 +32,14 @@ class AnnonceRepository {
     await _firestore.collection(_collection).doc(id).delete();
   }
 
+  // Change uniquement le statut d'une annonce.
+  // On n'envoie que ce champ a Firestore, pas toute l'annonce :
+  // c'est plus rapide et ca evite d'ecraser par erreur une autre
+  // modification faite entre-temps.
+  Future<void> changerStatut(String id, String statut) async {
+    await _firestore.collection(_collection).doc(id).update({'statut': statut});
+  }
+
   Stream<List<Annonce>> mesAnnonces(String userId) {
     return _firestore
         .collection(_collection)

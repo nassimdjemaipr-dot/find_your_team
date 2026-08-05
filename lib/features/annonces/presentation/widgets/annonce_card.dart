@@ -3,6 +3,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/stockage/favoris_service.dart';
 import '../../models/annonce.dart';
 import '../pages/detail_annonce_page.dart';
+import 'statut_pastille.dart';
 
 class AnnonceCard extends StatefulWidget {
   final Annonce annonce;
@@ -76,9 +77,24 @@ class _AnnonceCardState extends State<AnnonceCard> {
                         fontSize: 16,
                       ),
                     ),
-                    Text(
-                      widget.annonce.jeu,
-                      style: TextStyle(color: context.couleurs.onSurfaceVariant, fontSize: 13),
+                    const SizedBox(height: 2),
+                    // Le jeu et l'etat de l'annonce sur la meme ligne.
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            widget.annonce.jeu,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: context.couleurs.onSurfaceVariant,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        StatutPastille(
+                            statut: widget.annonce.statut, compact: true),
+                      ],
                     ),
                   ],
                 ),
