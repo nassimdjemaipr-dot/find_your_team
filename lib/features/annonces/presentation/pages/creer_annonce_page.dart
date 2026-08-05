@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/annonce.dart';
 import '../../data/annonce_repository.dart';
 import 'package:find_your_team/core/jeux.dart';
+import 'package:find_your_team/core/stockage/profil_joueur_service.dart';
 import 'package:find_your_team/core/theme/app_theme.dart';
 
 class CreerAnnoncePage extends StatefulWidget {
@@ -37,6 +38,10 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
 
   bool get _enModeEdition => widget.annonceAModifier != null;
 
+  // Vrai si on a rempli le formulaire depuis les infos enregistrees
+  // en local : sert a afficher un petit message a l'utilisateur.
+  bool _preRempli = false;
+
   @override
   void initState() {
     super.initState();
@@ -54,6 +59,16 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
       _rolesSelectionnees.addAll(annonce.roles);
       _microDisponible = annonce.micro;
       _dateFinAnnonce = DateTime.now().add(Duration(minutes: annonce.dureeMinutes));
+    } else {
+      // Nouvelle annonce : on reprend les informations du joueur
+      // enregistrees en local lors de sa derniere publication.
+      // On ne pre-remplit que les champs qui ne changent pas d'une
+      // annonce a l'autre (l'age, la plateforme, les pseudos).
+      _ageController.text = ProfilJoueurService.age;
+      _plateformeController.text = ProfilJoueurService.plateforme;
+      _pseudoJeuController.text = ProfilJoueurService.pseudoJeu;
+      _discordController.text = ProfilJoueurService.discord;
+      _preRempli = ProfilJoueurService.aDesInfos;
     }
   }
 
@@ -131,6 +146,15 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
         await _repository.ajouterAnnonce(annonce);
       }
 
+      // On retient les informations du joueur pour pre-remplir
+      // sa prochaine annonce (stockage local Hive).
+      await ProfilJoueurService.enregistrer(
+        age: _ageController.text,
+        plateforme: _plateformeController.text,
+        pseudoJeu: _pseudoJeuController.text,
+        discord: _discordController.text,
+      );
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(_enModeEdition ? 'Annonce modifiée avec succès !' : 'Annonce créée avec succès !')),
@@ -165,6 +189,51 @@ class _CreerAnnoncePageState extends State<CreerAnnoncePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Bandeau affiche quand on a repris les infos enregistrees
+              // lors de la derniere publication.
+              if (_preRempli) ...[
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: context.couleurs.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: context.couleurs.primary.withValues(alpha: 0.35),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.auto_awesome,
+                          size: 18, color: context.couleurs.primary),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'On a repris tes infos de la dernière annonce. '
+                          'Tu peux les modifier.',
+                          style: TextStyle(
+                            color: context.couleurs.onSurfaceVariant,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _ageController.clear();
+                            _plateformeController.clear();
+                            _pseudoJeuController.clear();
+                            _discordController.clear();
+                            _preRempli = false;
+                          });
+                        },
+                        child: const Text('Effacer'),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+
               TextFormField(
                 controller: _ageController,
                 decoration: const InputDecoration(hintText: 'Âge'),
