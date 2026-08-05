@@ -1,0 +1,31 @@
+rules_version = '2';
+
+// Regles de securite de la collection "annonces".
+// Elles sont appliquees par Firestore lui-meme : meme si quelqu'un
+// contournait l'application, il ne pourrait pas supprimer l'annonce
+// d'un autre joueur.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /annonces/{annonceId} {
+
+      // Lecture : reservee aux utilisateurs connectes.
+      allow read: if request.auth != null;
+
+      // Creation : on ne peut publier qu'a son propre nom.
+      // request.resource.data = le document que l'on essaie d'ecrire.
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid;
+
+      // Modification et suppression : reservees a l'auteur de l'annonce.
+      // resource.data = le document tel qu'il existe deja dans la base.
+      allow update, delete: if request.auth != null
+                            && resource.data.userId == request.auth.uid;
+    }
+
+    // Tout le reste est interdit par defaut.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
